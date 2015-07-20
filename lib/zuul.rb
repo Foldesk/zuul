@@ -8,15 +8,15 @@ module Zuul
   def self.configure(&block)
     @@configuration.configure &block
   end
-  
+
   def self.should_whitelist?
     active_record3? or active_record4? && protected_attribtues?
   end
-  
+
   def self.active_record3?
     ::ActiveRecord::VERSION::MAJOR == 3
   end
-  
+
   def self.active_record4?
     ::ActiveRecord::VERSION::MAJOR == 4
   end
@@ -30,4 +30,4 @@ require 'zuul/context'
 require 'zuul/active_record'
 require 'zuul/action_controller'
 
-require 'zuul/railtie' if defined?(Rails)
+require 'zuul/railtie' if defined?(Rails::Railtie)

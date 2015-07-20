@@ -4,8 +4,10 @@ gem "activesupport"
 gem "activerecord"
 gem "actionpack"
 
-gem "sqlite3"
+gem "sqlite3", :platforms => [:ruby]
+gem "activerecord-jdbcsqlite3-adapter", :platforms => [:jruby]
 gem "rake"
+gem "railties"
 gem "rspec"
 gem "rails", "~> 4.2.0"
 

@@ -3,6 +3,7 @@ before_install:
   - gem update --system
 cache: bundler
 rvm:
+  - 1.9.3
   - 2.1.5
   - 2.2.1
   - jruby-19mode
@@ -17,6 +18,5 @@ install:
 script:
   bundle exec rspec --color
 gemfile:
-  - gemfiles/rails4.0.gemfile
   - gemfiles/rails4.1.gemfile
   - gemfiles/rails4.2.gemfile
