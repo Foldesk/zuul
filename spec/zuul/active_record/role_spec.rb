@@ -6,34 +6,34 @@ describe "Zuul::ActiveRecord::Role" do
     before(:each) do
       Role.acts_as_authorization_role
     end
-    
+
     it "should allow mass assignment of :name" do
       role = Role.new(:name => 'Admin')
       role.name.should == 'Admin'
     end
-    
+
     it "should allow mass assignment of :slug" do
       role = Role.new(:slug => 'admin')
       role.slug.should == 'admin'
     end
-    
+
     it "should allow mass assignment of :level" do
       role = Role.new(:level => 100)
       role.level.should == 100
     end
-    
+
     it "should allow mass assignment of :context" do
       context = Context.create(:name => "Test Context")
       role = Role.new(:context => context)
       role.context_type.should == 'Context'
       role.context_id.should == context.id
     end
-    
+
     it "should allow mass assignment of :context_type" do
       role = Role.new(:context_type => 'Context')
       role.context_type.should == 'Context'
     end
-    
+
     it "should allow mass assignment of :context_id" do
       role = Role.new(:context_id => 1)
       role.context_id.should == 1
@@ -44,7 +44,7 @@ describe "Zuul::ActiveRecord::Role" do
     before(:each) do
       Role.acts_as_authorization_role
     end
-    
+
     it "should validate presence of level" do
       role = Role.new(:name => 'Admin', :slug => 'admin')
       role.valid?.should be_false
@@ -76,12 +76,12 @@ describe "Zuul::ActiveRecord::Role" do
       role = Role.new(:name => 'Admin', :slug => 'admin', :level => 100)
       role.valid?.should be_false
       role.errors.keys.should include(:slug)
-      
+
       Role.create(:name => 'Admin', :slug => 'admin', :level => 100, :context_type => 'Context').valid?.should be_true
       role = Role.new(:name => 'Admin', :slug => 'admin', :level => 100, :context_type => 'Context')
       role.valid?.should be_false
       role.errors.keys.should include(:slug)
-      
+
       Role.create(:name => 'Admin', :slug => 'admin', :level => 100, :context_type => 'Context', :context_id => 1).valid?.should be_true
       role = Role.new(:name => 'Admin', :slug => 'admin', :level => 100, :context_type => 'Context', :context_id => 1)
       role.valid?.should be_false
@@ -93,12 +93,12 @@ describe "Zuul::ActiveRecord::Role" do
       role = Role.new(:name => 'Admin', :slug => 'admin', :level => 100)
       role.valid?.should be_false
       role.errors.keys.should include(:level)
-      
+
       Role.create(:name => 'Admin', :slug => 'admin', :level => 100, :context_type => 'Context').valid?.should be_true
       role = Role.new(:name => 'Admin', :slug => 'admin', :level => 100, :context_type => 'Context')
       role.valid?.should be_false
       role.errors.keys.should include(:level)
-      
+
       Role.create(:name => 'Admin', :slug => 'admin', :level => 100, :context_type => 'Context', :context_id => 1).valid?.should be_true
       role = Role.new(:name => 'Admin', :slug => 'admin', :level => 100, :context_type => 'Context', :context_id => 1)
       role.valid?.should be_false
@@ -117,8 +117,8 @@ describe "Zuul::ActiveRecord::Role" do
 
   it "should provide the model with has_many associations for role_subjects and subjects" do
     Role.acts_as_authorization_role
-    Role.reflections.keys.should include(:role_users)
-    Role.reflections.keys.should include(:users)
+    Role.reflections.keys.map(&:to_sym).should include(:role_users)
+    Role.reflections.keys.map(&:to_sym).should include(:users)
     role = Role.create(:name => 'Admin', :slug => 'admin', :level => 100)
     role.should respond_to(:role_users)
     role.should respond_to(:users)
@@ -134,11 +134,11 @@ describe "Zuul::ActiveRecord::Role" do
     role.destroy
     RoleUser.count.should == 0
   end
-  
+
   it "should use the reflection classes to create the has_many associations" do
     Rank.acts_as_authorization_role :subject_class => :soldier, :with_permissions => false
-    Rank.reflections.keys.should include(:rank_soldiers)
-    Rank.reflections.keys.should include(:soldiers)
+    Rank.reflections.keys.map(&:to_sym).should include(:rank_soldiers)
+    Rank.reflections.keys.map(&:to_sym).should include(:soldiers)
     rank = Rank.create(:name => 'General', :slug => 'general', :level => 100)
     rank.should respond_to(:rank_soldiers)
     rank.should respond_to(:soldiers)
@@ -148,7 +148,7 @@ describe "Zuul::ActiveRecord::Role" do
     before(:each) do
       Role.acts_as_authorization_role
     end
-    
+
     it "should return a Zuul::Context object" do
       role = Role.create(:name => 'Admin', :slug => 'admin', :level => 100)
       role.context.should be_a(Zuul::Context)
@@ -179,12 +179,12 @@ describe "Zuul::ActiveRecord::Role" do
     it "should allow passing a class context" do
       expect { @role.context = Context }.to_not raise_exception
     end
-    
+
     it "should allow passing an instance context" do
       context = Context.create(:name => "Test Context")
       expect { @role.context = context }.to_not raise_exception
     end
-    
+
     it "should allow passing an existing Zuul::Context" do
       expect { @role.context = Zuul::Context.new }.to_not raise_exception
     end
@@ -236,7 +236,7 @@ describe "Zuul::ActiveRecord::Role" do
       end
     end
   end
-  
+
   context "with permissions disabled" do
     before(:each) do
       Role.acts_as_authorization_role :with_permissions => false
@@ -265,10 +265,10 @@ describe "Zuul::ActiveRecord::Role" do
       Role.acts_as_authorization_role
       Permission.acts_as_authorization_permission
     end
-    
+
     it "should provide the model with has_many associations for permission_roles and permissions" do
-      Role.reflections.keys.should include(:permission_roles)
-      Role.reflections.keys.should include(:permissions)
+      Role.reflections.keys.map(&:to_sym).should include(:permission_roles)
+      Role.reflections.keys.map(&:to_sym).should include(:permissions)
       role = Role.create(:name => 'Admin', :slug => 'admin', :level => 100)
       role.should respond_to(:permission_roles)
       role.should respond_to(:permissions)
@@ -282,11 +282,11 @@ describe "Zuul::ActiveRecord::Role" do
       role.destroy
       PermissionRole.count.should == 0
     end
-    
+
     it "should use the reflection classes to create the has_many associations" do
       Rank.acts_as_authorization_role :subject_class => :soldier, :permission_class => :skill
-      Rank.reflections.keys.should include(:rank_skills)
-      Rank.reflections.keys.should include(:skills)
+      Rank.reflections.keys.map(&:to_sym).should include(:rank_skills)
+      Rank.reflections.keys.map(&:to_sym).should include(:skills)
       rank = Rank.create(:name => 'General', :slug => 'general', :level => 100)
       rank.should respond_to(:rank_skills)
       rank.should respond_to(:skills)
@@ -296,7 +296,7 @@ describe "Zuul::ActiveRecord::Role" do
       before(:each) do
         @role = Role.create(:name => "Admin", :slug => "admin", :level => 100)
       end
-      
+
       it "should require a permission object or slug" do
         expect { @role.assign_permission }.to raise_exception
       end
@@ -316,36 +316,36 @@ describe "Zuul::ActiveRecord::Role" do
       it "should use the context when one is provided" do
         permission = Permission.create(:name => 'Edit', :slug => 'edit')
         context = Context.create(:name => "Test Context")
-        
+
         class_permission_role = @role.assign_permission(permission, Context)
         class_permission_role.id.should_not be_nil
         class_permission_role.context_type.should == 'Context'
         class_permission_role.context_id.should be_nil
-        
+
         inst_permission_role = @role.assign_permission(permission, context)
         inst_permission_role.id.should_not be_nil
         inst_permission_role.context_type.should == 'Context'
         inst_permission_role.context_id.should == context.id
       end
-      
+
       it "should use target_permission to lookup the closest contextual match when a permission slug is provided" do
         context = Context.create(:name => "Test Context")
         nil_permission = Permission.create(:name => 'Edit', :slug => 'edit')
         class_permission = Permission.create(:name => 'Edit', :slug => 'edit', :context_type => 'Context')
         inst_permission = Permission.create(:name => 'Edit', :slug => 'edit', :context_type => 'Context', :context_id => context.id)
-        
+
         nil_permission_role = @role.assign_permission(:edit, nil)
         nil_permission_role.id.should_not be_nil
         nil_permission_role.context_type.should be_nil
         nil_permission_role.context_id.should be_nil
         nil_permission_role.permission.id.should == nil_permission.id
-        
+
         class_permission_role = @role.assign_permission(:edit, Context)
         class_permission_role.id.should_not be_nil
         class_permission_role.context_type.should == 'Context'
         class_permission_role.context_id.should be_nil
         class_permission_role.permission.id.should == class_permission.id
-        
+
         inst_permission_role = @role.assign_permission(:edit, context)
         inst_permission_role.id.should_not be_nil
         inst_permission_role.context_type.should == 'Context'
@@ -358,13 +358,13 @@ describe "Zuul::ActiveRecord::Role" do
         nil_permission = Permission.create(:name => 'Edit', :slug => 'edit')
         class_permission = Permission.create(:name => 'Edit', :slug => 'edit', :context_type => 'Context')
         inst_permission = Permission.create(:name => 'Edit', :slug => 'edit', :context_type => 'Context', :context_id => context.id)
-        
+
         class_permission_role = @role.assign_permission(nil_permission, Context)
         class_permission_role.id.should_not be_nil
         class_permission_role.context_type.should == 'Context'
         class_permission_role.context_id.should be_nil
         class_permission_role.permission.id.should == nil_permission.id
-        
+
         inst_permission_role = @role.assign_permission(nil_permission, context)
         inst_permission_role.id.should_not be_nil
         inst_permission_role.context_type.should == 'Context'
@@ -376,7 +376,7 @@ describe "Zuul::ActiveRecord::Role" do
         @role.assign_permission(nil).should be_false
         @role.assign_permission(nil, Context).should be_false
       end
-      
+
       it "should fail and return false if the provided permission cannot be used within the provided context" do
         context = Context.create(:name => "Test Context")
         class_permission = Permission.create(:name => 'Edit', :slug => 'edit', :context_type => 'Context')
@@ -406,18 +406,18 @@ describe "Zuul::ActiveRecord::Role" do
         @role.assign_permission(permission, context).should be_an_instance_of(PermissionRole)
         PermissionRole.where(:role_id => @role.id, :permission_id => permission.id, :context_type => 'Context', :context_id => context.id).count.should == 1
       end
-      
+
       context "when forcing context" do
         it "should not go up the context chain to find the permission when a permission slug is provided" do
           context = Context.create(:name => "Test Context")
-          
+
           nil_permission = Permission.create(:name => 'Edit', :slug => 'edit')
           nil_permission_user = @role.assign_permission(:edit, nil)
           nil_permission_user.id.should_not be_nil
           nil_permission_user.context_type.should be_nil
           nil_permission_user.context_id.should be_nil
           nil_permission_user.permission.id.should == nil_permission.id
-          
+
           @role.assign_permission(:edit, Context, true).should be_false
           class_permission = Permission.create(:name => 'Edit', :slug => 'edit', :context_type => 'Context')
           class_permission_user = @role.assign_permission(:edit, Context, true)
@@ -425,7 +425,7 @@ describe "Zuul::ActiveRecord::Role" do
           class_permission_user.context_type.should == 'Context'
           class_permission_user.context_id.should be_nil
           class_permission_user.permission.id.should == class_permission.id
-          
+
           @role.assign_permission(:edit, context, true).should be_false
           inst_permission = Permission.create(:name => 'Edit', :slug => 'edit', :context_type => 'Context', :context_id => context.id)
           inst_permission_user = @role.assign_permission(:edit, context, true)
@@ -441,7 +441,7 @@ describe "Zuul::ActiveRecord::Role" do
       before(:each) do
         @role = Role.create(:name => "Admin", :slug => "admin", :level => 100)
       end
-      
+
       it "should require a permission object or slug" do
         expect { @role.unassign_permission }.to raise_exception
       end
@@ -473,13 +473,13 @@ describe "Zuul::ActiveRecord::Role" do
         @role.assign_permission(nil_permission, Context)
         @role.assign_permission(inst_permission, context)
         @role.assign_permission(class_permission, context)
-        
+
         @role.unassign_permission(:edit, context).permission_id.should == inst_permission.id
         @role.unassign_permission(:edit, context).should be_false
         @role.unassign_permission(:edit, Context).permission_id.should == class_permission.id
         @role.unassign_permission(:edit, Context).should be_false
       end
-      
+
       it "should use the permission object when one is provided" do
         context = Context.create(:name => "Test Context")
         nil_permission = Permission.create(:name => 'Edit', :slug => 'edit')
@@ -490,7 +490,7 @@ describe "Zuul::ActiveRecord::Role" do
         @role.assign_permission(nil_permission, Context)
         @role.assign_permission(inst_permission, context)
         @role.assign_permission(class_permission, context)
-        
+
         @role.unassign_permission(class_permission, context).permission_id.should == class_permission.id
         @role.unassign_permission(inst_permission, context).permission_id.should == inst_permission.id
         @role.unassign_permission(nil_permission, Context).permission_id.should == nil_permission.id
@@ -517,12 +517,12 @@ describe "Zuul::ActiveRecord::Role" do
         inst_permission = Permission.create(:name => 'Edit', :slug => 'edit', :context_type => 'Context', :context_id => context.id)
         @role.assign_permission(nil_permission, Context)
         @role.assign_permission(class_permission, context)
-        
+
         @role.unassign_permission(inst_permission, context).should be_false
         @role.unassign_permission(nil_permission, nil).should be_false
         @role.unassign_permission(class_permission, Context).should be_false
       end
-      
+
       context "when forcing context" do
         it "should not go up the context chain to find the permission when a permission slug is provided" do
           context = Context.create(:name => "Test Context")
@@ -534,7 +534,7 @@ describe "Zuul::ActiveRecord::Role" do
           @role.assign_permission(nil_permission, Context)
           @role.assign_permission(inst_permission, context)
           @role.assign_permission(class_permission, context)
-          
+
           @role.unassign_permission(:edit, context, true).permission_id.should == inst_permission.id
           inst_permission.destroy
           @role.unassign_permission(:edit, context, true).should be_false
@@ -549,7 +549,7 @@ describe "Zuul::ActiveRecord::Role" do
       before(:each) do
         @role = Role.create(:name => "Admin", :slug => "admin", :level => 100)
       end
-      
+
       it "should require a permission object or slug" do
         expect { @role.has_permission? }.to raise_exception
       end
@@ -574,17 +574,17 @@ describe "Zuul::ActiveRecord::Role" do
         inst_permission = Permission.create(:name => 'Edit', :slug => 'edit', :context_type => 'Context', :context_id => context.id)
         @role.assign_permission(nil_permission, Context)
         @role.assign_permission(class_permission, context)
-        
+
         @role.has_permission?(:edit, Context).should be_false
         @role.has_permission?(:edit, context).should be_false
-        
+
         @role.assign_permission(class_permission, Context)
         @role.assign_permission(inst_permission, context)
-        
+
         @role.has_permission?(:edit, Context).should be_true
         @role.has_permission?(:edit, context).should be_true
       end
-      
+
       it "should use the permission object when one is provided" do
         context = Context.create(:name => "Test Context")
         nil_permission = Permission.create(:name => 'Edit', :slug => 'edit')
@@ -592,15 +592,15 @@ describe "Zuul::ActiveRecord::Role" do
         inst_permission = Permission.create(:name => 'Edit', :slug => 'edit', :context_type => 'Context', :context_id => context.id)
         @role.assign_permission(nil_permission, Context)
         @role.assign_permission(class_permission, context)
-        
+
         @role.has_permission?(nil_permission, Context).should be_true
         @role.has_permission?(class_permission, context).should be_true
         @role.has_permission?(class_permission, Context).should be_false
         @role.has_permission?(inst_permission, context).should be_false
-        
+
         @role.assign_permission(class_permission, Context)
         @role.assign_permission(inst_permission, context)
-        
+
         @role.has_permission?(class_permission, Context).should be_true
         @role.has_permission?(inst_permission, context).should be_true
       end
@@ -620,25 +620,25 @@ describe "Zuul::ActiveRecord::Role" do
         @role.assign_permission(permission, Context)
         @role.has_permission?(:edit, context).should be_true
       end
-      
+
       it "should return false if the provided permission is not assigned to the subject within the context chain" do
         context = Context.create(:name => "Test Context")
         permission = Permission.create(:name => 'Edit', :slug => 'edit')
         @role.has_permission?(permission, context).should be_false
         @role.has_permission?(:edit, Context).should be_false
         @role.has_permission?(permission, nil).should be_false
-        
+
         @role.assign_permission(:edit, context)
         @role.has_permission?(:edit, context).should_not be_false
         @role.has_permission?(permission, Context).should be_false
         @role.has_permission?(:edit, nil).should be_false
-        
+
         @role.assign_permission(:edit, Context)
         @role.has_permission?(:edit, context).should_not be_false
         @role.has_permission?(permission, Context).should_not be_false
         @role.has_permission?(permission, nil).should be_false
       end
-      
+
       context "when forcing context" do
         it "should not go up the context chain to find the permission when a permission slug is provided" do
           context = Context.create(:name => "Test Context")
@@ -646,7 +646,7 @@ describe "Zuul::ActiveRecord::Role" do
           @role.assign_permission(nil_permission, Context)
           @role.has_permission?(:edit, Context, false).should be_true
           @role.has_permission?(:edit, Context, true).should be_false
-          
+
           class_permission = Permission.create(:name => 'Edit', :slug => 'edit', :context_type => 'Context')
           @role.assign_permission(class_permission, context)
           @role.has_permission?(:edit, context, false).should be_true
@@ -659,11 +659,11 @@ describe "Zuul::ActiveRecord::Role" do
       before(:each) do
         @role = Role.create(:name => "Admin", :slug => "admin", :level => 100)
       end
-      
+
       it "should accept an optional context" do
         expect { @role.permissions_for(nil) }.to_not raise_exception
       end
-      
+
       it "should use nil context when none is provided" do
         edit_permission = Permission.create(:name => 'Edit', :slug => 'edit')
         @role.assign_permission(edit_permission, Context)
@@ -689,7 +689,7 @@ describe "Zuul::ActiveRecord::Role" do
         @role.assign_permission(class_view, Context)
         @role.permissions_for(Context).length.should == 3
       end
-      
+
       context "when forcing context" do
         it "should only return permissions that match the context exactly" do
           edit_permission = Permission.create(:name => 'Edit', :slug => 'edit')
@@ -707,11 +707,11 @@ describe "Zuul::ActiveRecord::Role" do
       before(:each) do
         @role = Role.create(:name => "Admin", :slug => "admin", :level => 100)
       end
-      
+
       it "should accept an optional context" do
         expect { @role.permissions_for?(nil) }.to_not raise_exception
       end
-      
+
       it "should use nil context when none is provided" do
         edit_permission = Permission.create(:name => 'Edit', :slug => 'edit')
         @role.assign_permission(edit_permission, Context)
@@ -737,7 +737,7 @@ describe "Zuul::ActiveRecord::Role" do
         @role.assign_permission(class_view, Context)
         @role.permissions_for?(Context).should be_true
       end
-      
+
       context "when forcing context" do
         it "should only evaluate permissions that match the context exactly" do
           edit_permission = Permission.create(:name => 'Edit', :slug => 'edit')

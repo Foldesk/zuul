@@ -7,6 +7,6 @@ gem "actionpack"
 gem "sqlite3"
 gem "rake"
 gem "rspec"
-gem "rails", "~> 3.2.21"
+gem "rails", "~> 4.0.13"
 
 gemspec :path => "../"
